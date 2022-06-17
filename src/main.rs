@@ -14,6 +14,8 @@ use tensorflow::Status;
 use crate::types::TrainingData;
 
 mod types {
+    use std::path::PathBuf;
+
     use lib::{
         constants::{self, sizes},
         rules::types::{GameResult, GameState, Side},
@@ -39,7 +41,7 @@ mod types {
                 sides: Vec::new(),
             }
         }
-        pub fn append_turn(&mut self, gs: GameState, p: Array3<f32>) {
+        pub fn append_turn(&mut self, gs: &GameState, p: &Array3<f32>) {
             self.num_turns += 1;
             self.sides.push(gs.get_side());
             self.game_state_data
@@ -55,28 +57,49 @@ mod types {
             );
         }
         pub fn dump(self) -> Result<(), WriteNpyError> {
+            let game_state_data_path: PathBuf =
+                [constants::TRAINING_DATA_PATH, "game_state_data.npy"]
+                    .iter()
+                    .collect();
+            let pi_data_path: PathBuf = [constants::TRAINING_DATA_PATH, "pi_data.npy"]
+                .iter()
+                .collect();
+            let result_data_path: PathBuf = [constants::TRAINING_DATA_PATH, "result_data.npy"]
+                .iter()
+                .collect();
+
             write_npy(
-                constants::TRAINING_DATA_PATH.to_owned() + "game_state_data.npy",
+                game_state_data_path,
                 &Array4::from_shape_vec(
                     (
                         self.num_turns,
                         sizes::GAME_STATE_HEIGHT,
                         sizes::GAME_STATE_WIDTH,
-                        sizes::GAME_STATE_HEIGHT,
+                        sizes::GAME_STATE_PLANES,
                     ),
                     self.game_state_data,
                 )
                 .unwrap(),
             )?;
-
             write_npy(
-                constants::TRAINING_DATA_PATH.to_owned() + "pi_data.npy",
-                &Array1::from(self.pi_data),
+                pi_data_path,
+                &Array4::from_shape_vec(
+                    (
+                        self.num_turns,
+                        sizes::MOVE_WIDTH,
+                        sizes::MOVE_HEIGHT,
+                        sizes::MOVE_PLANES,
+                    ),
+                    self.pi_data,
+                )
+                .unwrap(),
             )?;
-
             write_npy(
-                constants::TRAINING_DATA_PATH.to_owned() + "",
-                &Array1::from(self.outcomes.expect("Can't dump because result was not set")),
+                result_data_path,
+                &Array1::from(
+                    self.outcomes
+                        .expect("Can't dump because result was not set"),
+                ),
             )?;
 
             Ok(())
@@ -114,7 +137,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut turn_number: usize = 1;
         while !res.has_ended() {
             let tree_search_output = tree_search.search(&net, true);
-            training_data.append_turn(game_state.clone(), tree_search_output.pi.clone());
+            training_data.append_turn(&game_state, &tree_search_output.pi);
 
             let best_move = tree_search_output.best_move;
             game_state.move_game(best_move, None);

@@ -5,7 +5,7 @@ pub const BLOCKED_HEADS_RULE: bool = false;
 pub const MASKING_VALUE: f32 = -100.0;
 pub const NUM_GAME_PER_STEP: usize = 1;
 
-pub const TRAINING_DATA_PATH: &str = "../training_data/";
+pub const TRAINING_DATA_PATH: &str = "training_data/";
 
 pub mod sizes {
     pub const NUM_IN_A_ROW_FOR_WIN: usize = 5;
@@ -30,7 +30,10 @@ pub mod sizes {
     pub const BOARD_STATE_START: usize = 6;
     pub const PLAYER_TO_MOVE_INDEX_IN_STATE: usize = 8;
 
-    pub const MOVE_SHAPE: (usize, usize, usize) = (BOARD_HEIGHT, BOARD_WIDTH, 1);
+    pub const MOVE_WIDTH: usize = 13;
+    pub const MOVE_HEIGHT: usize = 13;
+    pub const MOVE_PLANES: usize = 1;
+    pub const MOVE_SHAPE: (usize, usize, usize) = (MOVE_WIDTH, MOVE_HEIGHT, MOVE_PLANES);
 }
 pub mod mcts {
     pub const NUM_SEARCH: usize = 64;
@@ -60,7 +63,6 @@ pub fn index_to_move(index: usize) -> (usize, usize) {
 }
 
 pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
-    use mcts::*;
     use model::*;
     use sizes::*;
     use std::any::Any;
@@ -83,29 +85,7 @@ pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let cm: HashMap<&str, Box<dyn Any>> = hashmap![
-        GAME_LENGTH_CAP,
-        BLOCKED_HEADS_RULE,
-        NUM_IN_A_ROW_FOR_WIN,
-        BOARD_WIDTH,
-        BOARD_HEIGHT,
-        BOARD_PLANES,
-        BOARD_SHAPE,
-        PLANES_PER_PREV_BOARD,
-        NUM_PREV_BOARDS,
-        PLAYER_TO_MOVE_INDEX_IN_BOARD,
-        GAME_STATE_WIDTH,
-        GAME_STATE_HEIGHT,
-        GAME_STATE_PLANES,
         GAME_STATE_SHAPE,
-        BOARD_STATE_START,
-        PLAYER_TO_MOVE_INDEX_IN_STATE,
-        MOVE_SHAPE,
-        NUM_SEARCH,
-        C_PUCT,
-        EXPLORATION,
-        DIRICHLET_ALPHA,
-        DIRICHLET_WEIGHT,
-        SECONDARY_DIRICHLET_WEIGHT,
         NET_PATH,
         NUM_HIDDEN_RES_BLOCK,
         NUM_FILTERS,
