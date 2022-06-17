@@ -334,6 +334,9 @@ impl GameState {
     pub fn get_contents_clone(&self) -> Array3<bool> {
         self.contents.to_owned()
     }
+    pub fn into_iter(self) -> impl Iterator<Item = bool> {
+        self.contents.into_iter()
+    }
     pub fn get_grid(&self, x: usize, y: usize, p: usize) -> bool {
         self.contents[[y, x, p]]
     }

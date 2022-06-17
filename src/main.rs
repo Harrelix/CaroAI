@@ -7,7 +7,6 @@ use lib::rules::types::NeuralNet;
 use std::error::Error;
 use std::path::PathBuf;
 
-use ndarray_npy::write_npy;
 use tensorflow;
 use tensorflow::Code;
 use tensorflow::Status;
@@ -16,18 +15,18 @@ use crate::types::TrainingData;
 
 mod types {
     use lib::{
-        constants,
+        constants::{self, sizes},
         rules::types::{GameResult, GameState, Side},
     };
-    use ndarray::{Array3, Array4};
+    use ndarray::{Array1, Array3, Array4};
     use ndarray_npy::{write_npy, WriteNpyError};
 
     pub struct TrainingData {
         num_turns: usize,
         game_state_data: Vec<bool>,
-        pis: Vec<f32>,
-        outcome: Option<Vec<f32>>,
-        side: Vec<Side>,
+        pi_data: Vec<f32>,
+        outcomes: Option<Vec<f32>>,
+        sides: Vec<Side>,
     }
 
     impl TrainingData {
@@ -35,21 +34,21 @@ mod types {
             Self {
                 num_turns: 0,
                 game_state_data: Vec::new(),
-                pis: Vec::new(),
-                outcome: None,
-                side: Vec::new(),
+                pi_data: Vec::new(),
+                outcomes: None,
+                sides: Vec::new(),
             }
         }
         pub fn append_turn(&mut self, gs: GameState, p: Array3<f32>) {
             self.num_turns += 1;
-            self.side.push(gs.get_side());
+            self.sides.push(gs.get_side());
             self.game_state_data
                 .extend(gs.get_contents_clone().into_iter());
-            self.pis.extend(p.iter());
+            self.pi_data.extend(p.iter());
         }
         pub fn set_result(&mut self, result: GameResult) {
-            self.outcome = Some(
-                self.side
+            self.outcomes = Some(
+                self.sides
                     .iter()
                     .map(|side| result.outcome_for_side(*side))
                     .collect(),
@@ -58,8 +57,28 @@ mod types {
         pub fn dump(self) -> Result<(), WriteNpyError> {
             write_npy(
                 constants::TRAINING_DATA_PATH.to_owned() + "game_state_data.npy",
-                &Array4::from_shape_vec((1, 3, 4, 5), self.game_state_data).unwrap(),
+                &Array4::from_shape_vec(
+                    (
+                        self.num_turns,
+                        sizes::GAME_STATE_HEIGHT,
+                        sizes::GAME_STATE_WIDTH,
+                        sizes::GAME_STATE_HEIGHT,
+                    ),
+                    self.game_state_data,
+                )
+                .unwrap(),
             )?;
+
+            write_npy(
+                constants::TRAINING_DATA_PATH.to_owned() + "pi_data.npy",
+                &Array1::from(self.pi_data),
+            )?;
+
+            write_npy(
+                constants::TRAINING_DATA_PATH.to_owned() + "",
+                &Array1::from(self.outcomes.expect("Can't dump because result was not set")),
+            )?;
+
             Ok(())
         }
     }
@@ -108,7 +127,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("{}", res);
 
         training_data.set_result(res);
-        training_data.dump();
+        training_data.dump()?;
     }
     // let r = net.run(&game_state);
     // println!("Pi: {:?}", r.pi);
