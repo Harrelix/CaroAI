@@ -3,9 +3,10 @@ use std::{collections::HashMap, fmt::Debug};
 pub const GAME_LENGTH_CAP: usize = 81;
 pub const BLOCKED_HEADS_RULE: bool = false;
 pub const MASKING_VALUE: f32 = -100.0;
-pub const NUM_GAME_PER_STEP: usize = 1;
+pub const NUM_GAME_PER_STEP: usize = 3;
 
 pub const TRAINING_DATA_PATH: &str = "training_data/";
+pub const LOG_PATH: &str = "log.txt";
 
 pub mod sizes {
     pub const NUM_IN_A_ROW_FOR_WIN: usize = 5;

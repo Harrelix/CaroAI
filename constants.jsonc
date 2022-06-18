@@ -1,11 +1,11 @@
 // File written by src/constants.rs, intended for init_models.py
 {
-	"KERNEL_SIZE": [3, 3],
 	"NUM_FILTERS": 48,
+	"LEARNING_RATE": 0.01,
+	"GAME_STATE_SHAPE": [13, 13, 9],
+	"REG_CONST": 0.0001,
 	"NET_PATH": "models/CaroZero",
 	"NUM_HIDDEN_RES_BLOCK": 3,
-	"LEARNING_RATE": 0.01,
-	"REG_CONST": 0.0001,
-	"MOMENTUM": 0.9,
-	"GAME_STATE_SHAPE": [13, 13, 9]
+	"KERNEL_SIZE": [3, 3],
+	"MOMENTUM": 0.9
 }

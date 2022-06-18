@@ -32,7 +32,7 @@ impl Coord3D {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Move {
     pub x: usize,
     pub y: usize,
@@ -67,6 +67,11 @@ impl Move {
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}, {}, {}", self.x, self.y, self.p)
+    }
+}
+impl fmt::Debug for Move {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{} {}", self.x, self.y)
     }
 }
 
