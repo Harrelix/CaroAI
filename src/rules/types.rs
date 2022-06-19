@@ -181,17 +181,12 @@ impl<T: Data + RawData<Elem = bool>> Board<T> {
 
     pub fn evaluate(&self) -> GameResult {
         for p in 0..=1 {
+            let plane = self.get_plane(p);
             for x in 0..sizes::BOARD_WIDTH {
                 for y in 0..sizes::BOARD_HEIGHT {
                     for (dx, dy) in DIRECTIONS {
-                        if has_n_in_a_row_in_dir(
-                            &self.get_plane(p),
-                            x,
-                            y,
-                            dx,
-                            dy,
-                            sizes::NUM_IN_A_ROW_FOR_WIN,
-                        ) {
+                        if has_n_in_a_row_in_dir(&plane, x, y, dx, dy, sizes::NUM_IN_A_ROW_FOR_WIN)
+                        {
                             match p {
                                 0 => return GameResult::XWins,
                                 1 => return GameResult::OWins,
@@ -201,6 +196,14 @@ impl<T: Data + RawData<Elem = bool>> Board<T> {
                     }
                 }
             }
+        }
+        if self
+            .get_plane(0)
+            .iter()
+            .zip(self.get_plane(1).iter())
+            .all(|(&x, &o)| x || o)
+        {
+            return GameResult::Draws;
         }
         GameResult::NotFinished
     }
