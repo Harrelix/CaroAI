@@ -112,7 +112,7 @@ mod test {
         println!("{}", board);
         assert_eq!(
             board.get_legal_moves(None).len(),
-            sizes::BOARD_HEIGHT * sizes::BOARD_WIDTH - 2
+            sizes::BOARD_HEIGHT * sizes::BOARD_WIDTH - 4
         );
     }
 
