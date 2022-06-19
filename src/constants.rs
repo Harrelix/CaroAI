@@ -3,7 +3,7 @@ use std::{collections::HashMap, fmt::Debug};
 pub const GAME_LENGTH_CAP: usize = 81;
 pub const BLOCKED_HEADS_RULE: bool = false;
 pub const MASKING_VALUE: f32 = -100.0;
-pub const NUM_GAME_PER_STEP: usize = 3;
+pub const NUM_GAME_PER_STEP: usize = 1024;
 
 pub const TRAINING_DATA_PATH: &str = "training_data/";
 pub const LOG_PATH: &str = "log.txt";
@@ -37,7 +37,7 @@ pub mod sizes {
     pub const MOVE_SHAPE: (usize, usize, usize) = (MOVE_WIDTH, MOVE_HEIGHT, MOVE_PLANES);
 }
 pub mod mcts {
-    pub const NUM_SEARCH: usize = 64;
+    pub const NUM_SEARCH: usize = 32;
     pub const C_PUCT: f32 = 1.0;
     pub const EXPLORATION: f32 = 1.0;
     pub const DIRICHLET_ALPHA: f32 = 0.25;
@@ -52,18 +52,14 @@ pub mod model {
     pub const LEARNING_RATE: f32 = 0.01;
     pub const MOMENTUM: f32 = 0.9;
     pub const REG_CONST: f32 = 0.0001;
-}
-
-pub fn move_to_index(pos: (usize, usize)) -> usize {
-    let (x, y) = pos;
-    x + y * (sizes::MOVE_SHAPE.0)
-}
-
-pub fn index_to_move(index: usize) -> (usize, usize) {
-    (index % sizes::MOVE_SHAPE.0, index / sizes::MOVE_SHAPE.1)
+    pub mod training {
+        pub const MAX_SAMPLE_BOARD_FOR_TRAINING: usize = 1000000;
+        pub const MINI_BATCH: usize = 256;
+    }
 }
 
 pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
+    use model::training::*;
     use model::*;
     use sizes::*;
     use std::any::Any;
@@ -93,7 +89,9 @@ pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
         KERNEL_SIZE,
         LEARNING_RATE,
         MOMENTUM,
-        REG_CONST
+        REG_CONST,
+        MAX_SAMPLE_BOARD_FOR_TRAINING,
+        MINI_BATCH
     ];
 
     let mut s =
