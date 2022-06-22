@@ -3,7 +3,7 @@ use std::{collections::HashMap, fmt::Debug};
 pub const GAME_LENGTH_CAP: usize = 81;
 pub const BLOCKED_HEADS_RULE: bool = false;
 pub const MASKING_VALUE: f32 = -100.0;
-pub const NUM_GAME_PER_STEP: usize = 1024;
+pub const NUM_GAME_PER_STEP: usize = 512;
 
 pub const TRAINING_DATA_PATH: &str = "training_data/";
 pub const LOG_PATH: &str = "log.txt";
@@ -37,7 +37,7 @@ pub mod sizes {
     pub const MOVE_SHAPE: (usize, usize, usize) = (MOVE_WIDTH, MOVE_HEIGHT, MOVE_PLANES);
 }
 pub mod mcts {
-    pub const NUM_SEARCH: usize = 32;
+    pub const NUM_SEARCH: usize = 128;
     pub const C_PUCT: f32 = 1.0;
     pub const EXPLORATION: f32 = 1.0;
     pub const DIRICHLET_ALPHA: f32 = 0.25;
@@ -47,14 +47,15 @@ pub mod mcts {
 pub mod model {
     pub const NET_PATH: &str = "models/CaroZero";
     pub const NUM_HIDDEN_RES_BLOCK: usize = 3;
-    pub const NUM_FILTERS: usize = 48;
+    pub const NUM_FILTERS: usize = 32;
     pub const KERNEL_SIZE: (usize, usize) = (3, 3);
     pub const LEARNING_RATE: f32 = 0.01;
     pub const MOMENTUM: f32 = 0.9;
     pub const REG_CONST: f32 = 0.0001;
     pub mod training {
-        pub const MAX_SAMPLE_BOARD_FOR_TRAINING: usize = 1000000;
-        pub const MINI_BATCH: usize = 256;
+        pub const MAX_SAMPLE_BOARD_FOR_TRAINING: usize = 500000;
+        pub const MINI_BATCH: usize = 128;
+        pub const NUM_EPOCH: usize = 1;
     }
 }
 
@@ -83,6 +84,8 @@ pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
 
     let cm: HashMap<&str, Box<dyn Any>> = hashmap![
         GAME_STATE_SHAPE,
+        MOVE_SHAPE,
+        TRAINING_DATA_PATH,
         NET_PATH,
         NUM_HIDDEN_RES_BLOCK,
         NUM_FILTERS,
@@ -91,11 +94,11 @@ pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
         MOMENTUM,
         REG_CONST,
         MAX_SAMPLE_BOARD_FOR_TRAINING,
-        MINI_BATCH
+        MINI_BATCH,
+        NUM_EPOCH
     ];
 
-    let mut s =
-        String::from("// File written by src/constants.rs, intended for init_models.py\n{\n");
+    let mut s = String::from("// File written by src/constants.rs, intended for scripts\n{\n");
     for (k, v) in cm.iter() {
         if let Some(unsigned) = v.downcast_ref::<usize>() {
             push(&mut s, k, unsigned);
