@@ -143,60 +143,27 @@ impl TreeSearch {
             TreeSearch::backup(path, backup_val);
         }
 
-        if play_stochastically {
-            self.play_stochastically()
+        let exp = if play_stochastically {
+            1.0 / mcts::EXPLORATION
         } else {
-            self.play_deterministically()
-        }
-    }
-
-    fn play_deterministically(&mut self) -> MCTSOutput {
-        for child in self.root_node.borrow().iter_children() {
-            println!(
-                "Move: {}, n: {}",
-                child.borrow().m.unwrap(),
-                child.borrow().n
-            );
-        }
-        let best_ind = TreeSearch::argmax(
-            self.root_node
-                .borrow()
-                .iter_children()
-                .map(|child| child.borrow().n),
-        )
-        .expect("Root node is leaf node");
-        self.root_node = Rc::clone(&Rc::clone(&self.root_node).borrow().get_child(best_ind));
-
+            10.0
+        };
         let mut pi = Array3::zeros(sizes::MOVE_SHAPE);
-        for child in self.root_node.borrow().iter_children() {
-            pi[child
-                .borrow()
-                .m
-                .expect("Node has no prior move")
-                .get_move_arr()] = child.borrow().p;
-        }
-
-        MCTSOutput {
-            best_move: self.root_node.borrow().m.unwrap(),
-            pi,
-        }
-    }
-
-    fn play_stochastically(&mut self) -> MCTSOutput {
-        let mut pi = Array3::zeros(sizes::MOVE_SHAPE);
-        for child in self.root_node.borrow().iter_children() {
-            pi[child
-                .borrow()
-                .m
-                .expect("Node has no prior move")
-                .get_move_arr()] = child.borrow().p;
-        }
-        let weights: Vec<f32> = self
+        let sum_n: usize = self
             .root_node
             .borrow()
             .iter_children()
-            .map(|child| (child.borrow().n as f32).powf(1.0 / mcts::EXPLORATION))
-            .collect();
+            .map(|child| child.borrow().n)
+            .sum();
+
+        let mut weights = Vec::new();
+
+        for child in self.root_node.borrow().iter_children() {
+            let child_pi = ((child.borrow().n as f32) / (sum_n as f32)).powf(exp);
+            let child_move = child.borrow().m.expect("Node has no prior move");
+            weights.push(child_pi);
+            pi[child_move.get_move_arr()] = child_pi;
+        }
 
         let dist = WeightedIndex::new(weights).expect("Root node is leaf node");
         let mut rng = rand::thread_rng();
