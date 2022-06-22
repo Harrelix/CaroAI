@@ -7,3 +7,4 @@ if __name__ == "__main__":
         np.save(f, np.empty((0, 13, 13, 1), dtype=np.float32))
     with open("training_data/result_data.npy", "wb") as f:
         np.save(f, np.empty((0,), dtype=np.float32))
+    print("INITIALIZED DATA")
