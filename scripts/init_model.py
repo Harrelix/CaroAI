@@ -1,25 +1,9 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, regularizers, optimizers
-from dotenv import dotenv_values, load_dotenv
 import os
 import json
 import re
-
-
-def softmax_cross_entropy_with_masking(y_true, y_pred):
-    p = y_pred
-    pi = y_true
-
-    # mask output where prob < 0.05 (likely illegal moves)
-    zero = tf.fill(tf.shape(pi), 0.05)
-    where = tf.less(pi, zero)
-    negatives = tf.fill(tf.shape(pi), -100.0)
-    p = tf.where(where, negatives, p)
-
-    loss = tf.nn.softmax_cross_entropy_with_logits(labels=pi, logits=p)
-
-    return loss
 
 
 def conv_layer(x, filters, kernel_size, reg_const):
@@ -123,7 +107,10 @@ if __name__ == "__main__":
 
     model = keras.Model(inputs=main_input, outputs=[vh, ph])
     model.compile(
-        loss={"value_head": "mean_squared_error", "policy_head": "mean_squared_error"},
+        loss={
+            "value_head": "mean_squared_error",
+            "policy_head": "softmax_cross_entropy_with_masking",
+        },
         metrics={
             "value_head": "binary_accuracy",
             "policy_head": "categorical_accuracy",
@@ -136,15 +123,3 @@ if __name__ == "__main__":
     print(model.summary())
     keras.utils.plot_model(model, "models\\graph.png", show_shapes=True)
     model.save(constants["NET_PATH"])
-
-
-# hidden_cnn_layers = []
-# for i in range(1 + 4):
-#     hidden_cnn_layers.append({"filters": 48, "kernel_size": (3, 3)})
-
-# net = NeuralNet.ResidualCnn(hidden_layers=hidden_cnn_layers).model
-# import tensorflow as tf
-
-# tf.keras.utils.plot_model(net, "models\\graph.png", show_shapes=True)
-# print(net.summary())
-# NeuralNet.save_model(net, "models\\CaroZero")
