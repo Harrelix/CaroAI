@@ -135,7 +135,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Status::new_set(
                 Code::NotFound,
                 &format!(
-                    "Run '/init_models.py' to generate {} and try again.",
+                    "Run 'python scripts/init_models.py' to generate {} and try again.",
                     model_file.display()
                 ),
             )
@@ -180,7 +180,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             res = game_state.evaluate();
             turn_number += 1;
         }
-        // println!("{}", game_state.get_board_view());
         writeln!(log)?;
         execute!(
             stdout,
@@ -199,8 +198,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         write!(stdout, "Done\r")?;
     }
     writeln!(log, "--Session Ended--")?;
-    // let r = net.run(&game_state);
-    // println!("Pi: {:?}", r.pi);
 
     Ok(())
 }

@@ -1,4 +1,4 @@
-use crate::constants::{self, sizes};
+use crate::constants::sizes;
 
 use ndarray::{ArrayBase, Data, Dim, RawData};
 
