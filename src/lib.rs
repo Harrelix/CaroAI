@@ -4,6 +4,8 @@ pub mod constants;
 
 pub mod rules;
 
+pub mod types;
+
 #[cfg(test)]
 mod test {
     use crate::rules::types::*;
