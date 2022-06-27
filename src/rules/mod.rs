@@ -9,7 +9,7 @@ pub fn vaildate_consts() -> Result<(), Box<dyn std::error::Error>> {
         && sizes::GAME_STATE_SHAPE.0 < 127
         && sizes::GAME_STATE_SHAPE.1 < 127
         && sizes::GAME_STATE_SHAPE.2 < 127
-        && constants::GAME_LENGTH_CAP < 162
+        // && constants::GAME_LENGTH_CAP < 162
         && sizes::PLAYER_TO_MOVE_INDEX_IN_BOARD <= sizes::BOARD_PLANES
     {
         Ok(())

@@ -79,7 +79,7 @@ if __name__ == "__main__":
     vh = layers.Activation(lambda z: tf.nn.gelu(z, approximate=True))(vh)
     vh = layers.Flatten()(vh)
     vh = layers.Dense(
-        128,
+        64,
         use_bias=False,
         activation="linear",
         kernel_regularizer=regularizers.l2(constants["REG_CONST"]),
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         name="value_head",
     )(vh)
 
-    ph = conv_layer(x, 128, (3, 3), constants["REG_CONST"])
+    ph = conv_layer(x, 64, (3, 3), constants["REG_CONST"])
     ph = layers.Conv2D(
         name="policy_head",
         filters=constants["MOVE_SHAPE"][-1],
@@ -118,7 +118,8 @@ if __name__ == "__main__":
         optimizer=optimizers.SGD(
             learning_rate=constants["LEARNING_RATE"], momentum=constants["MOMENTUM"]
         ),
-        loss_weights={"value_head": 0.5, "policy_head": 0.5},
+        # optimizer=optimizers.Adam(learning_rate=constants["LEARNING_RATE"]),
+        loss_weights={"value_head": 0.1, "policy_head": 0.9},
     )
     print(model.summary())
     keras.utils.plot_model(model, "models\\graph.png", show_shapes=True)

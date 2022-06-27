@@ -6,10 +6,10 @@ import os
 import pickle
 
 if __name__ == "__main__":
-    print("loading constants")
+    print("LOADING CONSTANTS")
     with open("constants.jsonc", "r") as f:
         constants = json.loads(re.sub("//.*", "", f.read(), flags=re.MULTILINE))
-    print("loading data")
+    print("LOADING DATA")
     with open(constants["TRAINING_DATA_PATH"] + "game_state_data.npy", "rb") as f:
         game_state_data = np.load(f)
     with open(constants["TRAINING_DATA_PATH"] + "pi_data.npy", "rb") as f:
@@ -21,7 +21,23 @@ if __name__ == "__main__":
         print("DATAS HAVE DIFFERENT LENGTHS, QUITTING")
         exit()
     else:
+        num_data = result_data.shape[0]
         print("NUM DATA: ", result_data.shape[0])
+        if num_data > constants["MAX_SAMPLE_BOARD_FOR_TRAINING"]:
+            print("Larger than MAX_SAMPLE_BOARD_FOR_TRAINING, removing some old data")
+            game_state_data = game_state_data[
+                -constants["MAX_SAMPLE_BOARD_FOR_TRAINING"] :
+            ]
+            pi_data = pi_data[-constants["MAX_SAMPLE_BOARD_FOR_TRAINING"] :]
+            result_data = result_data[-constants["MAX_SAMPLE_BOARD_FOR_TRAINING"] :]
+            with open(
+                constants["TRAINING_DATA_PATH"] + "game_state_data.npy", "wb"
+            ) as f:
+                np.save(f, game_state_data)
+            with open(constants["TRAINING_DATA_PATH"] + "pi_data.npy", "wb") as f:
+                np.save(f, pi_data)
+            with open(constants["TRAINING_DATA_PATH"] + "result_data.npy", "wb") as f:
+                np.save(f, result_data)
 
     print("augmenting data")
     symmetries = [
@@ -46,6 +62,9 @@ if __name__ == "__main__":
             (aug_pi_data, np.array(list(map(symmetry, pi_data)))), axis=0
         )
     aug_result_data = np.tile(result_data, len(symmetries))
+    del game_state_data
+    del pi_data
+    del result_data
 
     print("loading model")
     net = load(constants["NET_PATH"])

@@ -1,9 +1,9 @@
 use std::{collections::HashMap, fmt::Debug};
 
-pub const GAME_LENGTH_CAP: usize = 81;
+// pub const GAME_LENGTH_CAP: usize = 81;
 pub const BLOCKED_HEADS_RULE: bool = false;
 pub const MASKING_VALUE: f32 = -100.0;
-pub const NUM_GAME_PER_STEP: usize = 512;
+pub const NUM_GAME_PER_STEP: usize = 150;
 
 pub const TRAINING_DATA_PATH: &str = "training_data/";
 pub const LOG_PATH: &str = "log.txt";
@@ -37,7 +37,7 @@ pub mod sizes {
     pub const MOVE_SHAPE: (usize, usize, usize) = (MOVE_WIDTH, MOVE_HEIGHT, MOVE_PLANES);
 }
 pub mod mcts {
-    pub const NUM_SEARCH: usize = 128;
+    pub const NUM_SEARCH: usize = 169;
     pub const C_PUCT: f32 = 1.0;
     pub const EXPLORATION: f32 = 1.0;
     pub const DIRICHLET_ALPHA: f32 = 0.25;
@@ -47,13 +47,13 @@ pub mod mcts {
 pub mod model {
     pub const NET_PATH: &str = "models/CaroZero";
     pub const NUM_HIDDEN_RES_BLOCK: usize = 3;
-    pub const NUM_FILTERS: usize = 32;
-    pub const KERNEL_SIZE: (usize, usize) = (3, 3);
-    pub const LEARNING_RATE: f32 = 0.01;
+    pub const NUM_FILTERS: usize = 8;
+    pub const KERNEL_SIZE: (usize, usize) = (5, 5);
+    pub const LEARNING_RATE: f32 = 0.00001;
     pub const MOMENTUM: f32 = 0.9;
     pub const REG_CONST: f32 = 0.0001;
     pub mod training {
-        pub const MAX_SAMPLE_BOARD_FOR_TRAINING: usize = 500000;
+        pub const MAX_SAMPLE_BOARD_FOR_TRAINING: usize = 50000;
         pub const MINI_BATCH: usize = 128;
         pub const NUM_EPOCH: usize = 1;
     }

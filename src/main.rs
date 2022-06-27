@@ -127,7 +127,6 @@ mod types {
 fn main() -> Result<(), Box<dyn Error>> {
     rules::vaildate_consts()?;
     constants::write_constants_to_file()?;
-
     let model_file: PathBuf = [constants::model::NET_PATH, "saved_model.pb"]
         .iter()
         .collect();
