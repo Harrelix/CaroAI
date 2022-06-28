@@ -6,7 +6,8 @@ pub const MASKING_VALUE: f32 = -100.0;
 pub const NUM_GAME_PER_STEP: usize = 150;
 
 pub const TRAINING_DATA_PATH: &str = "training_data/";
-pub const LOG_PATH: &str = "log.txt";
+pub const LOG_PATH: &str = "logs/";
+pub const NUM_THREADS: usize = 3;
 
 pub mod sizes {
     pub const NUM_IN_A_ROW_FOR_WIN: usize = 5;
@@ -37,7 +38,7 @@ pub mod sizes {
     pub const MOVE_SHAPE: (usize, usize, usize) = (MOVE_WIDTH, MOVE_HEIGHT, MOVE_PLANES);
 }
 pub mod mcts {
-    pub const NUM_SEARCH: usize = 169;
+    pub const NUM_SEARCH: usize = 32;
     pub const C_PUCT: f32 = 1.0;
     pub const EXPLORATION: f32 = 1.0;
     pub const DIRICHLET_ALPHA: f32 = 0.25;

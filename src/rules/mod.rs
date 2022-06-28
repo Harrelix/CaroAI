@@ -1,16 +1,19 @@
+use crate::constants;
 use crate::constants::sizes;
+use std::cmp::min;
 
 use ndarray::{ArrayBase, Data, Dim, RawData};
 
 pub mod types;
 
 pub fn vaildate_consts() -> Result<(), Box<dyn std::error::Error>> {
-    if sizes::NUM_IN_A_ROW_FOR_WIN < 127
+    if sizes::NUM_IN_A_ROW_FOR_WIN < min(sizes::GAME_STATE_WIDTH, sizes::GAME_STATE_HEIGHT)
         && sizes::GAME_STATE_SHAPE.0 < 127
         && sizes::GAME_STATE_SHAPE.1 < 127
         && sizes::GAME_STATE_SHAPE.2 < 127
         // && constants::GAME_LENGTH_CAP < 162
         && sizes::PLAYER_TO_MOVE_INDEX_IN_BOARD <= sizes::BOARD_PLANES
+        && constants::NUM_THREADS > 0
     {
         Ok(())
     } else {
