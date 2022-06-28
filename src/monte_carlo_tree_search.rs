@@ -149,20 +149,19 @@ impl TreeSearch {
             10.0
         };
         let mut pi = Array3::zeros(sizes::MOVE_SHAPE);
-        let sum_n: usize = self
-            .root_node
-            .borrow()
-            .iter_children()
-            .map(|child| child.borrow().n)
-            .sum();
+        let mut weights: Vec<f32>;
+        {
+            let root_ref = self.root_node.borrow();
+            let sum_n: usize = root_ref.iter_children().map(|child| child.borrow().n).sum();
 
-        let mut weights = Vec::new();
+            weights = Vec::with_capacity(root_ref.children.len());
 
-        for child in self.root_node.borrow().iter_children() {
-            let child_pi = ((child.borrow().n as f32) / (sum_n as f32)).powf(exp);
-            let child_move = child.borrow().m.expect("Node has no prior move");
-            weights.push(child_pi);
-            pi[child_move.get_move_arr()] = child_pi;
+            for child in root_ref.iter_children() {
+                let child_pi = ((child.borrow().n as f32) / (sum_n as f32)).powf(exp);
+                let child_move = child.borrow().m.expect("Node has no prior move");
+                weights.push(child_pi);
+                pi[child_move.get_move_arr()] = child_pi;
+            }
         }
 
         let dist = WeightedIndex::new(weights).expect("Root node is leaf node");
