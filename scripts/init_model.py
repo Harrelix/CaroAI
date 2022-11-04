@@ -79,7 +79,7 @@ if __name__ == "__main__":
     vh = layers.Activation(lambda z: tf.nn.gelu(z, approximate=True))(vh)
     vh = layers.Flatten()(vh)
     vh = layers.Dense(
-        64,
+        32,
         use_bias=False,
         activation="linear",
         kernel_regularizer=regularizers.l2(constants["REG_CONST"]),
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         name="value_head",
     )(vh)
 
-    ph = conv_layer(x, 64, (3, 3), constants["REG_CONST"])
+    ph = conv_layer(x, 32, (3, 3), constants["REG_CONST"])
     ph = layers.Conv2D(
         name="policy_head",
         filters=constants["MOVE_SHAPE"][-1],

@@ -1,11 +1,16 @@
-// File written by src/constants.rs, intended for init_models.py
+// File written by src/constants.rs, intended for scripts
 {
-	"NUM_FILTERS": 48,
-	"LEARNING_RATE": 0.01,
-	"GAME_STATE_SHAPE": [13, 13, 9],
-	"REG_CONST": 0.0001,
+	"MINI_BATCH": 128,
+	"NUM_HIDDEN_RES_BLOCK": 2,
 	"NET_PATH": "models/CaroZero",
-	"NUM_HIDDEN_RES_BLOCK": 3,
-	"KERNEL_SIZE": [3, 3],
+	"NUM_EPOCH": 1,
+	"REG_CONST": 0.0001,
+	"LEARNING_RATE": 0.0001,
+	"MAX_SAMPLE_BOARD_FOR_TRAINING": 50000,
+	"MOVE_SHAPE": [13, 13, 1],
+	"TRAINING_DATA_PATH": "training_data/",
+	"GAME_STATE_SHAPE": [13, 13, 9],
+	"NUM_FILTERS": 8,
+	"KERNEL_SIZE": [5, 5],
 	"MOMENTUM": 0.9
 }

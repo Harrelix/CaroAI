@@ -88,6 +88,8 @@ impl Side {
         }
     }
 }
+
+#[derive(Clone, Copy)]
 pub enum GameResult {
     XWins,
     OWins,

@@ -1,7 +1,7 @@
-use std::{error::Error, path::PathBuf};
+use std::path::PathBuf;
 
 use ndarray::{concatenate, Array1, Array3, Array4, Axis};
-use ndarray_npy::{read_npy, write_npy};
+use ndarray_npy::{read_npy, write_npy, WriteNpyError};
 
 use crate::{
     constants::{self, sizes},
@@ -41,7 +41,7 @@ impl TrainingData {
                 .collect(),
         );
     }
-    pub fn dump(self) -> Result<(), Box<dyn Error>> {
+    pub fn dump(self) -> Result<(), WriteNpyError> {
         let game_state_data_path: PathBuf = [constants::TRAINING_DATA_PATH, "game_state_data.npy"]
             .iter()
             .collect();
