@@ -1,0 +1,7 @@
+logs/**
+models/history#**
+models/**
+**/__pycache__
+training_data/**
+target/
+experiments.ipynb
