@@ -7,7 +7,7 @@ pub const NUM_GAME_PER_STEP: usize = 150;
 
 pub const TRAINING_DATA_PATH: &str = "training_data/";
 pub const LOG_PATH: &str = "logs/";
-pub const NUM_THREADS: usize = 3;
+pub const NUM_THREADS: usize = 10;
 
 pub mod sizes {
     pub const NUM_IN_A_ROW_FOR_WIN: usize = 5;
@@ -38,7 +38,7 @@ pub mod sizes {
     pub const MOVE_SHAPE: (usize, usize, usize) = (MOVE_WIDTH, MOVE_HEIGHT, MOVE_PLANES);
 }
 pub mod mcts {
-    pub const NUM_SEARCH: usize = 32;
+    pub const NUM_SEARCH: usize = 128;
     pub const C_PUCT: f32 = 1.0;
     pub const EXPLORATION: f32 = 1.0;
     pub const DIRICHLET_ALPHA: f32 = 0.25;
@@ -47,10 +47,10 @@ pub mod mcts {
 }
 pub mod model {
     pub const NET_PATH: &str = "models/CaroZero";
-    pub const NUM_HIDDEN_RES_BLOCK: usize = 3;
+    pub const NUM_HIDDEN_RES_BLOCK: usize = 2;
     pub const NUM_FILTERS: usize = 8;
     pub const KERNEL_SIZE: (usize, usize) = (5, 5);
-    pub const LEARNING_RATE: f32 = 0.00001;
+    pub const LEARNING_RATE: f32 = 0.0001;
     pub const MOMENTUM: f32 = 0.9;
     pub const REG_CONST: f32 = 0.0001;
     pub mod training {
