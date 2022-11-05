@@ -10,12 +10,12 @@ use tensorflow::eager::raw_ops;
 #[derive(Clone)]
 struct Node {
     game_state: GameState,
-    n: usize,
-    w: f32,
-    p: f32,
-    q: f32,
-    m: Option<Move>,
-    children: Vec<Rc<RefCell<Node>>>,
+    n: usize,                         // the number of time this node is visited
+    w: f32,                           // sum of value of descendants
+    p: f32,          // "prior probability", or policy, or prob. that the AI chose this m
+    q: f32,          // w / n, the "mean value"
+    m: Option<Move>, // the move that lead to this node, none if it's the root node
+    children: Vec<Rc<RefCell<Node>>>, // list of children
 }
 
 impl Node {
@@ -74,6 +74,7 @@ impl TreeSearch {
         for _ in 0..mcts::NUM_SEARCH {
             let mut path: Path = vec![Rc::clone(&self.root_node)];
             let mut last_node = Rc::clone(&path[0]);
+            // traverse the tree till root node, based on ucb
             while last_node.borrow().has_children() {
                 let n: f32 = last_node
                     .borrow()
@@ -94,17 +95,21 @@ impl TreeSearch {
             }
 
             let backup_val: f32;
+            // expanding the current node
             {
                 let mut last_node = last_node.borrow_mut();
 
                 let res = last_node.game_state.evaluate();
                 backup_val = if res.has_ended() {
+                    // backup the outcmoe if game has ended
                     res.outcome_for_side(last_node.game_state.get_side())
                 } else {
+                    // not ended so we create the child noddes
                     let legal_move_pool = last_node.game_state.get_legal_moves(None);
-
+                    // get net's output given the leaf's state
                     let net_output = net.run(&last_node.game_state);
 
+                    // set all the illegal moves to constants::MASKING_VALUE, then softmax
                     let mut masked_policy =
                         Array3::from_elem(sizes::MOVE_SHAPE, constants::MASKING_VALUE);
                     for mv in legal_move_pool.iter() {
@@ -127,6 +132,7 @@ impl TreeSearch {
                     .resolve()
                     .unwrap();
 
+                    // generate new nodes
                     for mv in legal_move_pool {
                         let mut new_game_state = last_node.game_state.clone();
                         new_game_state.move_game(mv, None);
@@ -137,18 +143,23 @@ impl TreeSearch {
                             Some(mv),
                         ));
                     }
+                    // set the backup value to the net's output
                     net_output.value_head
                 };
             }
+            // backup
             TreeSearch::backup(path, backup_val);
         }
 
+        // ==Finding the best move==
         let exp = if play_stochastically {
             1.0 / mcts::EXPLORATION
         } else {
             10.0
         };
+        // every "prob" of the moves
         let mut pi = Array3::zeros(sizes::MOVE_SHAPE);
+        // calculate the weigths
         let mut weights: Vec<f32>;
         {
             let root_ref = self.root_node.borrow();
@@ -164,6 +175,7 @@ impl TreeSearch {
             }
         }
 
+        // get random move based on the weights, setting root node to the new node
         let dist = WeightedIndex::new(weights).expect("Root node is leaf node");
         let mut rng = rand::thread_rng();
         self.root_node = Rc::clone(
@@ -172,12 +184,15 @@ impl TreeSearch {
                 .get_child(dist.sample(&mut rng)),
         );
 
+        // return pi and the best move
         MCTSOutput {
             best_move: self.root_node.borrow().m.unwrap(),
             pi,
         }
     }
 
+    /// Used in tree traversal
+    /// Find the max index in `xs`
     fn argmax<T, Iter>(xs: Iter) -> Option<usize>
     where
         T: Copy + PartialOrd,

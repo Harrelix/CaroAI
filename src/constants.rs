@@ -60,6 +60,7 @@ pub mod model {
     }
 }
 
+/// Write constants to constants.jsonc for scripts to read
 pub fn write_constants_to_file() -> Result<(), Box<dyn std::error::Error>> {
     use model::training::*;
     use model::*;
