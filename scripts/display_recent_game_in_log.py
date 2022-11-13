@@ -1,3 +1,5 @@
+"""Script that display to console the latest game taken from logs"""
+
 from ast import Lambda
 from blessed import Terminal
 from copy import deepcopy

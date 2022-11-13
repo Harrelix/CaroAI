@@ -1,3 +1,5 @@
+"""Script that clear and initialize all training data"""
+
 import numpy as np
 
 if __name__ == "__main__":

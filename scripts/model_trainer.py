@@ -1,3 +1,5 @@
+"""Script that train the model using the training data"""
+
 import numpy as np
 from load_and_save_model import load, save
 import json

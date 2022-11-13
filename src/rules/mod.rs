@@ -6,6 +6,7 @@ use ndarray::{ArrayBase, Data, Dim, RawData};
 
 pub mod types;
 
+/// Makes sure that the constants are valid
 pub fn vaildate_consts() -> Result<(), Box<dyn std::error::Error>> {
     if sizes::NUM_IN_A_ROW_FOR_WIN < min(sizes::GAME_STATE_WIDTH, sizes::GAME_STATE_HEIGHT)
         && sizes::GAME_STATE_SHAPE.0 < 127
@@ -21,6 +22,7 @@ pub fn vaildate_consts() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
+/// helps with `has_n_in_a_row_in_dir`
 const DIRECTIONS: [(i8, i8); 8] = [
     (1, 0),
     (1, -1),
@@ -32,6 +34,7 @@ const DIRECTIONS: [(i8, i8); 8] = [
     (1, 1),
 ];
 
+/// takes in the plane and returns if it has n true value in a row (diagonally or orthogonally)
 fn has_n_in_a_row_in_dir<T: Data + RawData<Elem = bool>>(
     plane: &ArrayBase<T, Dim<[usize; 2]>>,
     x: usize,
